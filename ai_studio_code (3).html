@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>5-Team Double Round Robin Tournament</title>
+    <style>
+        :root {
+            --primary-bg: #f4f7f6;
+            --secondary-bg: #ffffff;
+            --text-color: #333;
+            --header-bg: #007bff;
+            --header-text: #ffffff;
+            --button-bg: #007bff;
+            --button-hover-bg: #0056b3;
+            --border-color: #dee2e6;
+            --shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--primary-bg);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+        }
+        .container {
+            width: 100%;
+            max-width: 800px;
+            background-color: var(--secondary-bg);
+            border-radius: 8px;
+            box-shadow: var(--shadow);
+            overflow: hidden;
+        }
+        header {
+            background-color: var(--header-bg);
+            color: var(--header-text);
+            padding: 20px;
+            text-align: center;
+        }
+        header h1 {
+            margin: 0;
+            font-size: 1.8em;
+        }
+        nav {
+            display: flex;
+            background-color: #e9ecef;
+        }
+        nav button {
+            flex: 1;
+            padding: 15px;
+            border: none;
+            background-color: transparent;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: bold;
+            color: var(--text-color);
+            border-bottom: 3px solid transparent;
+            transition: all 0.2s ease-in-out;
+        }
+        nav button.active {
+            border-bottom-color: var(--header-bg);
+            color: var(--header-bg);
+        }
+        .page {
+            display: none;
+            padding: 20px;
+        }
+        .page.active {
+            display: block;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input[type="text"], input[type="number"] {
+            width: 100%;
+            padding: 10px;
+            box-sizing: border-box;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+        }
+        input[type="number"] {
+            width: 60px;
+            text-align: center;
+        }
+        .button-group {
+            display: flex;
+            gap: 10px;
+        }
+        .btn {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 4px;
+            background-color: var(--button-bg);
+            color: white;
+            font-size: 1em;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        .btn:hover {
+            background-color: var(--button-hover-bg);
+        }
+        .btn-danger {
+            background-color: #dc3545;
+        }
+        .btn-danger:hover {
+            background-color: #c82333;
+        }
+        .round {
+            margin-bottom: 25px;
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+            padding: 15px;
+        }
+        .round-title {
+            font-size: 1.4em;
+            margin-top: 0;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--border-color);
+            color: var(--header-bg);
+        }
+        .match {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #e9ecef;
+        }
+        .match:last-child {
+            border-bottom: none;
+        }
+        .team-names {
+            flex: 1;
+            text-align: center;
+            font-size: 1.1em;
+        }
+        .score-inputs {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .bye {
+            font-style: italic;
+            color: #6c757d;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid var(--border-color);
+            padding: 12px;
+            text-align: center;
+        }
+        th {
+            background-color: #e9ecef;
+        }
+        td:first-child, td:nth-child(2) {
+            text-align: left;
+        }
+         td:first-child {
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <header>
+            <h1>Tournament Manager</h1>
+        </header>
+
+        <nav>
+            <button id="nav-setup" onclick="showPage('setup')">Setup</button>
+            <button id="nav-schedule" onclick="showPage('schedule')">Schedule & Results</button>
+            <button id="nav-ranking" onclick="showPage('ranking')">Ranking</button>
+        </nav>
+
+        <!-- Setup Page -->
+        <div id="page-setup" class="page">
+            <h2>Setup Tournament</h2>
+            <p>Enter the names of the 5 participating teams.</p>
+            <div id="team-inputs">
+                <!-- Inputs will be generated by JS -->
+            </div>
+            <div class="button-group">
+                <button class="btn" onclick="generateTournament()">Generate Tournament</button>
+                <button class="btn btn-danger" onclick="resetTournament()">Clear Data & Reset</button>
+            </div>
+        </div>
+
+        <!-- Schedule Page -->
+        <div id="page-schedule" class="page">
+            <h2>Schedule & Results</h2>
+            <div id="schedule-container">
+                <p>Generate the tournament from the Setup page first.</p>
+            </div>
+        </div>
+
+        <!-- Ranking Page -->
+        <div id="page-ranking" class="page">
+            <h2>Ranking</h2>
+            <div id="ranking-container">
+                <p>No data available. Generate the tournament and enter some results.</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const NUM_TEAMS = 5;
+        let tournamentData = {
+            teams: [],
+            schedule: [],
+            results: {},
+        };
+
+        // --- Core Application Logic ---
+
+        window.onload = function() {
+            loadData();
+            renderTeamInputs();
+            if (tournamentData.teams.length === NUM_TEAMS) {
+                renderSchedule();
+                renderRanking();
+                showPage('schedule');
+            } else {
+                showPage('setup');
+            }
+        };
+
+        function showPage(pageName) {
+            document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
+            document.getElementById(`page-${pageName}`).classList.add('active');
+
+            document.querySelectorAll('nav button').forEach(button => button.classList.remove('active'));
+            document.getElementById(`nav-${pageName}`).classList.add('active');
+            
+            if (pageName === 'ranking') {
+                renderRanking();
+            }
+        }
+
+        // --- Data Persistence ---
+
+        function saveData() {
+            localStorage.setItem('roundRobinTournament', JSON.stringify(tournamentData));
+        }
+
+        function loadData() {
+            const data = localStorage.getItem('roundRobinTournament');
+            if (data) {
+                tournamentData = JSON.parse(data);
+            }
+        }
+
+        function resetTournament() {
+            if (confirm("Are you sure you want to delete all tournament data? This cannot be undone.")) {
+                localStorage.removeItem('roundRobinTournament');
+                location.reload();
+            }
+        }
+
+        // --- Setup Page Logic ---
+
+        function renderTeamInputs() {
+            const container = document.getElementById('team-inputs');
+            container.innerHTML = '';
+            for (let i = 0; i < NUM_TEAMS; i++) {
+                const teamName = tournamentData.teams[i] || '';
+                const formGroup = document.createElement('div');
+                formGroup.className = 'form-group';
+                formGroup.innerHTML = `
+                    <label for="team${i}">Team ${i + 1}</label>
+                    <input type="text" id="team${i}" value="${teamName}" placeholder="Enter team name">
+                `;
+                container.appendChild(formGroup);
+            }
+        }
+
+        function generateTournament() {
+            const teamNames = [];
+            for (let i = 0; i < NUM_TEAMS; i++) {
+                const teamName = document.getElementById(`team${i}`).value.trim();
+                if (!teamName) {
+                    alert(`Please enter a name for Team ${i + 1}.`);
+                    return;
+                }
+                teamNames.push(teamName);
+            }
+
+            tournamentData.teams = teamNames;
+            tournamentData.results = {};
+            generateSchedule();
+            saveData();
+            renderSchedule();
+            showPage('schedule');
+        }
+
+        function generateSchedule() {
+            const teams = [...tournamentData.teams];
+            const schedule = [];
+            
+            if (teams.length % 2 !== 0) {
+                teams.push("BYE"); // Add a dummy team for bye rounds
+            }
+
+            const numRounds = teams.length - 1;
+            const half = teams.length / 2;
+
+            for (let round = 0; round < numRounds; round++) {
+                const roundMatches = [];
+                for (let i = 0; i < half; i++) {
+                    const home = teams[i];
+                    const away = teams[teams.length - 1 - i];
+                    if (home !== "BYE" && away !== "BYE") {
+                        roundMatches.push({ home, away });
+                    }
+                }
+                schedule.push(roundMatches);
+                
+                // Rotate teams, keeping the first one fixed
+                const lastTeam = teams.pop();
+                teams.splice(1, 0, lastTeam);
+            }
+            
+            // Create the second half of the double round robin
+            const secondHalf = JSON.parse(JSON.stringify(schedule));
+            secondHalf.forEach(round => {
+                round.forEach(match => {
+                    // Swap home and away
+                    [match.home, match.away] = [match.away, match.home];
+                });
+            });
+
+            tournamentData.schedule = [...schedule, ...secondHalf];
+        }
+
+        // --- Schedule Page Logic ---
+        
+        function renderSchedule() {
+            const container = document.getElementById('schedule-container');
+            if (tournamentData.teams.length !== NUM_TEAMS) {
+                container.innerHTML = `<p>Generate the tournament from the Setup page first.</p>`;
+                return;
+            }
+
+            container.innerHTML = '';
+            tournamentData.schedule.forEach((round, roundIndex) => {
+                const roundDiv = document.createElement('div');
+                roundDiv.className = 'round';
+
+                const roundTitle = document.createElement('h3');
+                roundTitle.className = 'round-title';
+                roundTitle.textContent = `Round ${roundIndex + 1}`;
+                roundDiv.appendChild(roundTitle);
+                
+                // Find the team with a bye in this round (for odd number of teams)
+                const playingTeams = new Set(round.flatMap(m => [m.home, m.away]));
+                const byeTeam = tournamentData.teams.find(t => !playingTeams.has(t));
+                if (byeTeam) {
+                    roundDiv.innerHTML += `<p class="bye">${byeTeam} has a bye this round.</p>`;
+                }
+
+                round.forEach((match, matchIndex) => {
+                    const matchId = `r${roundIndex}-m${matchIndex}`;
+                    const result = tournamentData.results[matchId] || { home: '', away: '' };
+
+                    const matchDiv = document.createElement('div');
+                    matchDiv.className = 'match';
+                    matchDiv.innerHTML = `
+                        <div class="team-names">
+                            <span>${match.home}</span>
+                        </div>
+                        <div class="score-inputs">
+                            <input type="number" min="0" value="${result.home}" data-match-id="${matchId}" data-team="home" onchange="saveScore(this)">
+                            <span>-</span>
+                            <input type="number" min="0" value="${result.away}" data-match-id="${matchId}" data-team="away" onchange="saveScore(this)">
+                        </div>
+                        <div class="team-names">
+                             <span>${match.away}</span>
+                        </div>
+                    `;
+                    roundDiv.appendChild(matchDiv);
+                });
+                container.appendChild(roundDiv);
+            });
+        }
+        
+        function saveScore(inputElement) {
+            const matchId = inputElement.dataset.matchId;
+            const teamType = inputElement.dataset.team;
+            const score = inputElement.value;
+
+            if (!tournamentData.results[matchId]) {
+                tournamentData.results[matchId] = { home: '', away: '' };
+            }
+            tournamentData.results[matchId][teamType] = score !== '' ? parseInt(score, 10) : '';
+            saveData();
+        }
+
+        // --- Ranking Page Logic ---
+
+        function renderRanking() {
+            const container = document.getElementById('ranking-container');
+             if (tournamentData.teams.length !== NUM_TEAMS) {
+                container.innerHTML = `<p>No data available. Generate the tournament and enter some results.</p>`;
+                return;
+            }
+
+            // 1. Initialize stats for each team
+            let stats = {};
+            tournamentData.teams.forEach(team => {
+                stats[team] = {
+                    played: 0,
+                    wins: 0,
+                    draws: 0,
+                    losses: 0,
+                    points: 0
+                };
+            });
+
+            // 2. Calculate stats from results
+            tournamentData.schedule.forEach((round, roundIndex) => {
+                round.forEach((match, matchIndex) => {
+                    const matchId = `r${roundIndex}-m${matchIndex}`;
+                    const result = tournamentData.results[matchId];
+
+                    if (result && result.home !== '' && result.away !== '') {
+                        const homeScore = result.home;
+                        const awayScore = result.away;
+                        const homeTeam = match.home;
+                        const awayTeam = match.away;
+
+                        stats[homeTeam].played++;
+                        stats[awayTeam].played++;
+
+                        if (homeScore > awayScore) {
+                            stats[homeTeam].wins++;
+                            stats[homeTeam].points += 3;
+                            stats[awayTeam].losses++;
+                        } else if (awayScore > homeScore) {
+                            stats[awayTeam].wins++;
+                            stats[awayTeam].points += 3;
+                            stats[homeTeam].losses++;
+                        } else {
+                            stats[homeTeam].draws++;
+                            stats[homeTeam].points++;
+                            stats[awayTeam].draws++;
+                            stats[awayTeam].points++;
+                        }
+                    }
+                });
+            });
+
+            // 3. Convert to array and sort
+            const sortedTeams = Object.keys(stats).map(teamName => ({
+                name: teamName,
+                ...stats[teamName]
+            }));
+
+            sortedTeams.sort((a, b) => {
+                if (b.points !== a.points) {
+                    return b.points - a.points; // Higher points first
+                }
+                // Add tie-breaking rules if needed (e.g., goal difference)
+                return a.name.localeCompare(b.name); // Alphabetical as a simple tie-breaker
+            });
+
+            // 4. Render the table
+            let tableHTML = `
+                <table>
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Team</th>
+                            <th>P</th>
+                            <th>W</th>
+                            <th>D</th>
+                            <th>L</th>
+                            <th>Pts</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+
+            sortedTeams.forEach((team, index) => {
+                tableHTML += `
+                    <tr>
+                        <td>${index + 1}</td>
+                        <td>${team.name}</td>
+                        <td>${team.played}</td>
+                        <td>${team.wins}</td>
+                        <td>${team.draws}</td>
+                        <td>${team.losses}</td>
+                        <td><strong>${team.points}</strong></td>
+                    </tr>
+                `;
+            });
+
+            tableHTML += `</tbody></table>`;
+            container.innerHTML = tableHTML;
+        }
+
+    </script>
+
+</body>
+</html>
